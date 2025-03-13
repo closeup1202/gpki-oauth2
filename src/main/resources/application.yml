@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: gpki-auth
+
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: INFO
+    org.springframework.security.web.authentication: INFO
+
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+  include-application-name: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 9900
+  servlet:
+    context-path: /gpki-local
+
+gpki:
+  auth:
+    oauth2:
+      refresh-token-timeout: 3600
+      access-token-timeout: 120
+  api:
+    path: /login

@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+  name: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}-svc
+  namespace: ${V_PROJECT_NAME}-${V_BRANCH_NAME}
+spec:
+  ports:
+  - name: gpki-auth
+    port: 9900
+    protocol: TCP
+    targetPort: 9900
+  selector:
+    app: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+  name: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}-deploy
+  namespace: ${V_PROJECT_NAME}-${V_BRANCH_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+    spec:
+      containers:
+      - image: ${V_HARBOR_URL}/${V_PROJECT_NAME}-${V_APP_NAME}/${V_APP_NAME}-${V_BRANCH_NAME}:${V_BUILD_NUMBER}
+        imagePullPolicy: Always
+        name: ${V_PROJECT_NAME}-${V_APP_NAME}-${V_BRANCH_NAME}
+        resources: {}
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: ${V_BRANCH_NAME}
+          - name: JAVA_TOOL_OPTIONS
+            value: "-Duser.timezone=Asia/Seoul"
+        volumeMounts:
+          - name: ${V_PROJECT_NAME}-${V_BRANCH_NAME}-gpki-auth-logs-volumes
+            mountPath: /app/logs
+          - name: ${V_PROJECT_NAME}-${V_BRANCH_NAME}-gpki-auth-errorlogs-volumes
+            mountPath: /app/errorlogs
+      volumes:
+      - name: ${V_PROJECT_NAME}-${V_BRANCH_NAME}-gpki-auth-logs-volumes
+        hostPath:
+          path: /mnt/NAS/service-log/${V_BRANCH_NAME}/gpki/logs
+      - name: ${V_PROJECT_NAME}-${V_BRANCH_NAME}-gpki-auth-errorlogs-volumes
+        hostPath:
+          path: /mnt/NAS/service-log/${V_BRANCH_NAME}/gpki/errorlogs
+      imagePullSecrets:
+        - name: regcred
+      restartPolicy: Always

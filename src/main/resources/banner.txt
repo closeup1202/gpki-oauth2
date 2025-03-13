@@ -1,0 +1,4 @@
+
+${AnsiColor.CYAN}:: GPKI SaaS Authorization Server ::
+${AnsiColor.DEFAULT}Copyright 2024. vtw all rights reserved.
+${AnsiColor.DEFAULT}Powered by Spring Boot ${spring-boot.version}

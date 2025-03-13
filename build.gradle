@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+    // for sonarqube inspect settings (prd)
+    //id "org.sonarqube" version "6.0.1.5171"
+}
+
+group = 'kr.go.saas'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+// for sonarqube inspect settings (prd)
+//sonarqube {
+//    properties {
+//        property "sonar.projectKey", "${System.getenv('REGISTRY_PROJECTNAME')}-${System.getenv('BRANCH_NAME')}"
+//        property "sonar.projectName", "${System.getenv('REGISTRY_PROJECTNAME')}-${System.getenv('BRANCH_NAME')}"
+//        property "sonar.host.url", System.getenv('SONARQUBE_SERVER')
+//        property "sonar.login", project.hasProperty("SONARQUBE_TOKEN") ? project.SONARQUBE_TOKEN : ""
+//    }
+//}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+}
+
+test {
+    useJUnitPlatform()
+}
